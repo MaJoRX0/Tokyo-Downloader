@@ -1,3 +1,5 @@
+Since im rarely on github you can contact me on discord if anything needed. Username: x5oc
+
 # Tokyo Downloader
 ## 📌 Overview
 
