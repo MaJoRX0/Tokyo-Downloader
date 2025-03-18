@@ -3,11 +3,11 @@ Since im rarely on github you can contact me on discord if anything needed. User
 # Tokyo Downloader
 ## 📌 Overview
 
-Tokyo Downloader is a Python-based tool that fetches download links for anime episodes from **Tokyo Insider**. The extracted links are saved in a text file for easy bulk downloading using **Internet Download Manager (IDM)**.
+Tokyo Downloader is a Python-based tool that fetches download links for anime Episodes/OVAs/Movies/Specials from **Tokyo Insider**. The extracted links are saved in a text file for easy bulk downloading using **Internet Download Manager (IDM)**.
 
 ## 🚀 Features
 
-- Fetches anime episode download links automatically.
+- Fetches Episode/OVA/Movies/Special episode download links automatically.
 - Allows users to select a range of episodes.
 - Supports sorting options:
   - **Biggest Size**: Selects the largest file.
@@ -46,23 +46,33 @@ python main.py
 ### Steps:
 
 1. Enter the anime URL (e.g., *Solo Leveling* page on Tokyo Insider).
-2. Select the range of episodes to download.
+2. Select the range of episodes/OVAs/movies/speiclas (0 For none) to download.
 3. Choose sorting criteria (**Biggest Size**, **Most Downloaded**, **Latest**).
 4. The script fetches and saves links in `links.txt`.
 
 ### Example Output:
 
 ```sh
-Url [https://www.tokyoinsider.com/anime/B/Bleach_(TV)]: https://www.tokyoinsider.com/anime/S/Solo_Leveling_(TV)
-Anime name: Solo Leveling
-19 Episodes found select a range to download [1-10]:
+Url [https://www.tokyoinsider.com/anime/B/Bleach_(TV)]:
+>>> extracting links from main page...
+Anime name:
+> Bleach <
+406 Episodes found - select a range to download (0: None) [1-406]: 1-2
+3 OVAs found - select a range to download (0: None) [1-3]: 1-3
+6 Specials found - select a range to download (0: None) [1-6]: 0
+4 Movies found - select a range to download (0: None) [1-4]: 1-1
 [?] Select the download type:
    Biggest Size
  > Most Downloaded
    Latest
 
-['EP: 4', '360.25 MB', '138', 'rension23', '01/27/24', 'Success']
-['EP: 5', '360.87 MB', '75', 'rension23', '02/03/24', 'Success']
+>>> fetching...
+>>> ['ova: 10', '14.10 MB', '473', 'bleachfanclarkey', '02/11/12', 'Success']
+>>> ['ova: 2', '200.02 MB', '382', 'sifsif', '09/13/11', 'Success']
+>>> ['ova: 1', '198.00 MB', '318', 'sifsif', '09/20/11', 'Success']
+>>> ['movie: 1', '598.49 MB', '806', 'andrai', '11/15/10', 'Success']
+>>> ['episode: 2', '175.39 MB', '4409', 'Anonymous', '05/03/10', 'Faild no valid link']
+>>> ['episode: 1', '130.82 MB', '11457', 'Anonymous', '05/03/10', 'Success']
 ✅ Links successfully saved to links.txt
 ```
 
