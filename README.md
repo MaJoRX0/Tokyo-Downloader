@@ -3,7 +3,7 @@ Since im rarely on github you can contact me on discord if anything needed. User
 # Tokyo Downloader
 ## 📌 Overview
 
-Tokyo Downloader is a Python-based tool that fetches download links for anime Episodes/OVAs/Movies/Specials from **Tokyo Insider**. The extracted links are saved in a text file for easy bulk downloading using **Internet Download Manager (IDM)**.
+Tokyo Downloader is a Python-based tool that fetches download links for anime Episodes/OVAs/Movies/Specials from **Tokyo Insider**. The extracted links are saved in a text file for easy bulk downloading using any download manager that supports linebreak separated lists such as **Internet Download Manager (IDM)**, **wget**, and **yt-dlp**).
 
 ## 🚀 Features
 
@@ -21,15 +21,21 @@ Tokyo Downloader is a Python-based tool that fetches download links for anime Ep
 
 You can either download the standalone executable (no installation required) or use the open-source Python version.
 
-### Option 1: Download the Executable (No Installation Needed)
+### Option 1: Download the Executable for Windows (No Installation Needed)
 
 - Download the `.exe` version from [here](https://github.com/MaJoRX0/Tokyo-Downloader/releases).
 - Run the executable file.
 - Follow the on-screen prompts.
 
-### Option 2: Use the Python Version
+### Option 2: Use the Python Version (Supports Windows and Linux)
 
-Ensure **Python 3.8+** is installed, then install dependencies:
+Ensure **Python 3.8+** is installed, then create a virtual environment:
+
+```sh
+python -m venv .venv
+```
+
+Install dependencies:
 
 ```sh
 pip install -r requirements.txt
@@ -46,7 +52,7 @@ python main.py
 ### Steps:
 
 1. Enter the anime URL (e.g., *Solo Leveling* page on Tokyo Insider).
-2. Select the range of episodes/OVAs/movies/speiclas (0 For none) to download.
+2. Select the range of episodes/OVAs/movies/speiclas (0 For none) to download. It is required to input a range (ie. `1-1`) if not `0`.
 3. Choose sorting criteria (**Biggest Size**, **Most Downloaded**, **Latest**).
 4. The script fetches and saves links in `links.txt`.
 
@@ -76,11 +82,27 @@ Anime name:
 ✅ Links successfully saved to links.txt
 ```
 
-## 📂 Importing Links into IDM
+## 📂 Downloading Episodes from Links
+
+### IDM
 
 1. Open **Internet Download Manager (IDM)**.
 2. Click **Tasks** (top-left menu) > **Import** > **From text file**.
 3. Select `links.txt` and start downloading episodes in bulk!
+
+### wget and yt-dlp
+
+While in the same folder as the `links.txt`, run the command for your preferred tool:
+
+```sh
+wget --read-timeout 60 -i links.txt
+```
+
+```sh
+yt-dlp -a links.txt
+```
+
+It is suggested to move the `links.txt` into the folder you want the videos to be downloaded to.
 
 ## 📜 License
 
