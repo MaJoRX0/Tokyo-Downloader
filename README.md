@@ -29,10 +29,11 @@ You can either download the standalone executable (no installation required) or 
 
 ### Option 2: Use the Python Version (Supports Windows and Linux)
 
-Ensure **Python 3.8+** is installed, then create a virtual environment:
+Ensure **Python 3.8+** is installed, then create and activate a virtual environment:
 
 ```sh
 python -m venv .venv
+source .venv/bin/activate
 ```
 
 Install dependencies:
