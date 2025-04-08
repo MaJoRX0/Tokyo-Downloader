@@ -3,7 +3,7 @@ Since im rarely on github you can contact me on discord if anything needed. User
 # Tokyo Downloader
 ## 📌 Overview
 
-Tokyo Downloader is a Python-based tool that fetches download links for anime Episodes/OVAs/Movies/Specials from **Tokyo Insider**. The extracted links are saved in a text file for easy bulk downloading using any download manager that supports linebreak separated lists such as **Internet Download Manager (IDM)**, **wget**, and **yt-dlp**).
+Tokyo Downloader is a Python-based tool that fetches download links for anime Episodes/OVAs/Movies/Specials from **Tokyo Insider**. The extracted links are saved in a text file for easy bulk downloading using any download manager such as **Internet Download Manager (IDM)**, **wget**, and **yt-dlp**.
 
 ## 🚀 Features
 
@@ -14,7 +14,7 @@ Tokyo Downloader is a Python-based tool that fetches download links for anime Ep
   - **Most Downloaded**: Picks the most downloaded file.
   - **Latest**: Chooses the most recent file.
 - Uses **multi-threading** for faster processing.
-- Saves links in `links.txt` for IDM import.
+- Saves links as a linebreak separated list in `links.txt` for use with download managers (e.g. IDM).
 - Available as both an **executable file** and an **open-source Python script**.
 
 ## 📥 Installation
@@ -102,7 +102,7 @@ wget --read-timeout 60 -i links.txt
 yt-dlp -a links.txt
 ```
 
-It is suggested to move the `links.txt` into the folder you want the videos to be downloaded to.
+It is suggested to move the `links.txt` into the folder you want the videos to be downloaded to before running the command.
 
 ## 📜 License
 
