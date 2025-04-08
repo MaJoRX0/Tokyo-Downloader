@@ -17,7 +17,7 @@ HEADERS = ({
 
 def convert_size(size_str):
     # Convert file size from MB/GB format to a float (in MB).
-    size_str = size_str.upper().strip()
+    size_str = size_str.replace(",","").upper().strip()
     if 'GB' in size_str:
         return float(size_str.replace('GB', '').strip()) * 1024  # Convert GB to MB
     elif 'MB' in size_str:
