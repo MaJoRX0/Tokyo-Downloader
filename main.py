@@ -85,6 +85,14 @@ def process_link(choice, link):
         print(f">>> ❌ Error processing {link}: {e}")
 
 
+def sort_key(item):
+    try:
+        return int(item[1])
+    except ValueError:
+        # Return a very large number or a string that sorts appropriately
+        return float('inf')  # To put special episodes at the end
+        # Or return a string like "ZZZZ" to put them at the end alphabetically
+
 def fetch_download(choice, links):
     # Fetch downloads using multi-threading.
     with ThreadPoolExecutor(max_workers=5) as executor:  # Use 5 threads
@@ -95,7 +103,7 @@ def fetch_download(choice, links):
     while not dlinks_queue.empty():
         dlinks.append(dlinks_queue.get())
 
-    dlinks.sort(key=lambda li: int(li[1]))
+    dlinks.sort(key=sort_key)
     save_links_to_file(dlinks)  # Save to file after all threads complete
 
 
