@@ -86,12 +86,12 @@ def process_link(choice, link):
 
 
 def sort_key(item):
+    # Custom sort key function for sorting download links.
     try:
         return int(item[1])
     except ValueError:
-        # Return a very large number or a string that sorts appropriately
+        # Return a very large number that sorts appropriately
         return float('inf')  # To put special episodes at the end
-        # Or return a string like "ZZZZ" to put them at the end alphabetically
 
 def fetch_download(choice, links):
     # Fetch downloads using multi-threading.
