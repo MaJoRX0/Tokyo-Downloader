@@ -17,7 +17,7 @@ HEADERS = ({
 
 def convert_size(size_str):
     # Convert file size from MB/GB format to a float (in MB).
-    size_str = size_str.upper().strip()
+    size_str = size_str.replace(",","").upper().strip()
     if 'GB' in size_str:
         return float(size_str.replace('GB', '').strip()) * 1024  # Convert GB to MB
     elif 'MB' in size_str:
@@ -85,6 +85,14 @@ def process_link(choice, link):
         print(f">>> ❌ Error processing {link}: {e}")
 
 
+def sort_key(item):
+    # Custom sort key function for sorting download links.
+    try:
+        return int(item[1])
+    except ValueError:
+        # Return a very large number that sorts appropriately
+        return float('inf')  # To put special episodes at the end
+
 def fetch_download(choice, links):
     # Fetch downloads using multi-threading.
     with ThreadPoolExecutor(max_workers=5) as executor:  # Use 5 threads
@@ -95,7 +103,7 @@ def fetch_download(choice, links):
     while not dlinks_queue.empty():
         dlinks.append(dlinks_queue.get())
 
-    dlinks.sort(key=lambda li: int(li[1]))
+    dlinks.sort(key=sort_key)
     save_links_to_file(dlinks)  # Save to file after all threads complete
 
 
