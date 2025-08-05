@@ -8,6 +8,9 @@ import typer
 import inquirer
 from datetime import datetime
 
+# Max number of threads to use for downloading
+MAX_WORKERS = 5
+
 dlinks_queue = queue.Queue()  # Thread-safe queue for storing download links
 HEADERS = ({
     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36',
@@ -44,7 +47,7 @@ def save_links_to_file(links, filename="links.txt"):
         print(f"❌ Error saving links: {e}")
 
 
-def process_link(choice, link):
+def process_link(choice, providers:list, link):
     # Processes a single download link to extract the largest/latest download link.
     try:
         #print(f">>> processing: {link}")
@@ -59,17 +62,32 @@ def process_link(choice, link):
         # Sort based on user's choice
         if choice == "Biggest Size":
             c_h2_divs.sort(
-                key=lambda div: convert_size(div.xpath('.//b/text()')[1]) if len(div.xpath('.//b/text()')) > 1 else 0)
+                key=lambda div: convert_size(div.xpath('.//b/text()')[1]) if len(div.xpath('.//b/text()')) > 1 else 0, reverse=True)
         elif choice == "Most Downloaded":
             c_h2_divs.sort(key=lambda div: int(div.xpath('.//b/text()')[2]) if len(div.xpath('.//b/text()')) > 2 else 0)
         else:
             c_h2_divs.sort(key=lambda div: convert_date(div.xpath('.//b/text()')[4]) if len(
                 div.xpath('.//b/text()')) > 4 else datetime.min)
 
-        # Extract best download link
-        selected_div = c_h2_divs[-1]  # Get last element after sorting
+        # Extract best download link, using the providers list, if a link with the first provider is not found, fallback to the next one
+        if providers:
+            for provider in providers:
+                for div in c_h2_divs:
+                    link = div.xpath('.//a/@href')[1]
+                    if provider in link:
+                        selected_div = div
+                        break
+                else:
+                    continue  # If no matching provider found, try next provider
+                break  # Exit loop if a provider was found
+            else:
+                print(f">>> ❌ No matching provider found in {link}, picking according to choice")
+                selected_div = c_h2_divs[0]  # Get first element after sorting
+        else:
+            selected_div = c_h2_divs[0]          
+        
         b_elements = selected_div.xpath('.//b/text()')
-        download_link = selected_div.xpath('.//a/@href')[1]
+        download_link = selected_div.xpath('.//a/@href')[1]            
         epn = link.split('/')[-1]
         type = link.split('/')[-2]
         dstatus = "Success"
@@ -93,10 +111,10 @@ def sort_key(item):
         # Return a very large number that sorts appropriately
         return float('inf')  # To put special episodes at the end
 
-def fetch_download(choice, links):
+def fetch_download(choice, providers, links):
     # Fetch downloads using multi-threading.
-    with ThreadPoolExecutor(max_workers=5) as executor:  # Use 5 threads
-        executor.map(lambda link: process_link(choice, link), links)
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:  # Use 5 threads
+        executor.map(lambda link: process_link(choice, providers, link), links)
 
     dlinks = []
     # Move queue data to the global list
@@ -150,8 +168,11 @@ def okay(URL):
                 append_links(input.split('-'), val, links)
 
     selected = inquirer.list_input("Select the download type", choices=["Biggest Size", "Most Downloaded", "Latest"])
+    # Prompt user to enter providers in order of preference
+    providers_input = typer.prompt("Enter providers in order of preference, comma-separated\nexample: 'HorribleSubs, AnimeSakura'", default="AnimeSakura, HorribleSubs, Hatsuyuki")
+    providers = [p.strip() for p in providers_input.split(',') if p.strip()]
     print(">>> fetching...")
-    fetch_download(selected, links)  # Run multi-threaded download fetcher
+    fetch_download(selected, providers, links)  # Run multi-threaded download fetcher
 
 
 def main(url: str = typer.Option('https://www.tokyoinsider.com/anime/B/Bleach_(TV)', prompt=True)):
