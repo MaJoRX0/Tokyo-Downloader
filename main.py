@@ -33,18 +33,21 @@ def convert_date(date_str):
         return datetime.min  # If date is invalid, return the oldest date possible
 
 
-def save_links_to_file(links, filename="links.txt"):
+def save_links_to_file(links, output_file="links.txt"):
     # Writes a list of links to a text file, each on a new line.
     try:
-        with open(filename, "w", encoding="utf-8") as file:
+        with open(output_file, "w", encoding="utf-8") as file:
             for link in links:
-                file.write(link[0] + "\n")
-        print(f"✅ Links successfully saved to {filename}")
+                if link[2] == None:
+                    file.write(link[0] + "\n")
+                else:
+                    file.write(link[0] + "|" + link[2] + "\n")
+        print(f"✅ Links successfully saved to {output_file}")
     except Exception as e:
         print(f"❌ Error saving links: {e}")
 
 
-def process_link(choice, link):
+def process_link(choice, link, name_template, total_eps):
     # Processes a single download link to extract the largest/latest download link.
     try:
         #print(f">>> processing: {link}")
@@ -79,7 +82,16 @@ def process_link(choice, link):
         # Get the first valid download link
 
         print(f">>> {b_elements}")
-        dlinks_queue.put([download_link, epn])  # Store in thread-safe queue
+
+
+        filename = None
+
+        if name_template != "0":
+            anime_name = link.split('/')[-3] 
+            file_extension = download_link[-4:]
+            filename = format_names(name_template, anime_name, type, epn, b_elements, total_eps, file_extension)
+
+        dlinks_queue.put([download_link, epn, filename])  # Store in thread-safe queue
 
     except Exception as e:
         print(f">>> ❌ Error processing {link}: {e}")
@@ -93,10 +105,10 @@ def sort_key(item):
         # Return a very large number that sorts appropriately
         return float('inf')  # To put special episodes at the end
 
-def fetch_download(choice, links):
+def fetch_download(choice, links, name_template, total_eps):
     # Fetch downloads using multi-threading.
     with ThreadPoolExecutor(max_workers=5) as executor:  # Use 5 threads
-        executor.map(lambda link: process_link(choice, link), links)
+        executor.map(lambda link: process_link(choice, link, name_template, total_eps), links)
 
     dlinks = []
     # Move queue data to the global list
@@ -140,18 +152,63 @@ def okay(URL):
 
     links = []
 
+    total_eps = {}
+
     for key in types.keys():
         val = linkDict[key]
         length = len(val)
         if (length > 0):
-            input = typer.prompt(f"{length} {types[key]} found - select a range to download (0: None)",
+            typer_input = typer.prompt(f"{length} {types[key]} found - select a range to download (0: None)",
                                  default=f"1-{length}")
-            if (input != "0"):
-                append_links(input.split('-'), val, links)
+            if (typer_input != "0"):
+                append_links(typer_input.split('-'), val, links)
+
+        total_eps[key] = length
+
+
 
     selected = inquirer.list_input("Select the download type", choices=["Biggest Size", "Most Downloaded", "Latest"])
+
+    custom_name = input("Define custom names for the files? (y/n) ").lower()
+    if custom_name == "y" or custom_name == "yes":
+        name_template = custom_names()
+    else:
+        name_template = "0" 
+
     print(">>> fetching...")
-    fetch_download(selected, links)  # Run multi-threaded download fetcher
+    fetch_download(selected, links, name_template, total_eps)  # Run multi-threaded download fetcher
+
+
+
+def custom_names():
+    print("Default custom name: <name> - <type><number> [uploader]")
+    name_template = input("Write your own? Press Enter for default.\nAvailable arguments: {anime_name}, {type}, {episode_number}, {size}, {uploader}, {upload_date}: ")
+
+    if name_template != "" and "{episode_number}" not in name_template:
+        name_template = input("Without the episode number, the filenames won't be unique. Press Enter for default. ")
+
+    return name_template
+
+
+def format_names(name_template, anime_name, type, epn, b_elements, total_eps, file_extension):
+    full_epn = epn
+
+    for i in range(len(str(total_eps[type])) - len(epn)):
+        full_epn = "0" + epn
+
+    size, uploader, date = b_elements[1], b_elements[3], b_elements[4]
+
+    name = ""
+
+    if name_template == "":
+        name = f"{anime_name} - {type}{full_epn} [{uploader}]{file_extension}"
+    else:
+        name = name_template.format(anime_name=anime_name, type=type, episode_number=full_epn, size=size, uploader=uploader, upload_date=date)
+        name = name + file_extension
+
+    return name
+
+
 
 
 def main(url: str = typer.Option('https://www.tokyoinsider.com/anime/B/Bleach_(TV)', prompt=True)):
