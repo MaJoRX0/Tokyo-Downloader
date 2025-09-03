@@ -103,6 +103,8 @@ wget --read-timeout 60 -i links.txt
 yt-dlp -a links.txt
 ```
 
+If you chose to use custom names for the files, use one of the scripts in `download-scripts` instead.
+
 It is suggested to move the `links.txt` into the folder you want the videos to be downloaded to before running the command.
 
 ## 📜 License
