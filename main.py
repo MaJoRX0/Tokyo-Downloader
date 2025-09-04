@@ -88,6 +88,7 @@ def process_link(choice, link, name_template, total_eps):
 
         if name_template != "0":
             anime_name = link.split('/')[-3] 
+            anime_name = anime_name.replace(":", "")
             file_extension = download_link[-4:]
             filename = format_names(name_template, anime_name, type, epn, b_elements, total_eps, file_extension)
 
