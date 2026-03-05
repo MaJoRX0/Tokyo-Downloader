@@ -63,8 +63,17 @@ def process_link(choice, link, name_template, total_eps):
         if choice == "Biggest Size":
             c_h2_divs.sort(
                 key=lambda div: convert_size(div.xpath('.//b/text()')[1]) if len(div.xpath('.//b/text()')) > 1 else 0)
+        elif choice == "Lowest Size":
+            c_h2_divs.sort(
+                key=lambda div: convert_size(div.xpath('.//b/text()')[1]) if len(div.xpath('.//b/text()')) > 1 else float('inf'), reverse=True)
+        elif choice == "Least Downloaded":
+            c_h2_divs.sort(
+                key=lambda div: int(div.xpath('.//b/text()')[2]) if len(div.xpath('.//b/text()')) > 2 else float('inf'), reverse=True)
         elif choice == "Most Downloaded":
             c_h2_divs.sort(key=lambda div: int(div.xpath('.//b/text()')[2]) if len(div.xpath('.//b/text()')) > 2 else 0)
+        elif choice == "Oldest":
+            c_h2_divs.sort(
+                key=lambda div: convert_date(div.xpath('.//b/text()')[4]) if len(div.xpath('.//b/text()')) > 4 else datetime.max, reverse=True)
         else:
             c_h2_divs.sort(key=lambda div: convert_date(div.xpath('.//b/text()')[4]) if len(
                 div.xpath('.//b/text()')) > 4 else datetime.min)
@@ -168,7 +177,7 @@ def okay(URL):
 
 
 
-    selected = inquirer.list_input("Select the download type", choices=["Biggest Size", "Most Downloaded", "Latest"])
+    selected = inquirer.list_input("Select the download type", choices=["Biggest Size", "Lowest Size", "Most Downloaded", "Least Downloaded", "Latest", "Oldest"])
 
     custom_name = input("Define custom names for the files? (y/n) ").lower()
     if custom_name == "y" or custom_name == "yes":
