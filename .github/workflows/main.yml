@@ -1,0 +1,54 @@
+name: Build Tokyo Downloader EXE
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch: 
+
+jobs:
+  build-windows:
+    runs-on: windows-latest 
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller
+        pip install -r requirements.txt
+        # FIX: Downgrade click to fix Typer 0.15.1 incompatibility
+        pip install "click<8.2.0"
+
+    - name: Build EXE with PyInstaller
+      run: |
+        pyinstaller --onefile --copy-metadata readchar -n "Tokyo-Downloader" main.py 
+
+    - name: Verify Compiled EXE
+      run: |
+        ./dist/Tokyo-Downloader.exe --help
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Tokyo-Downloader-Windows-EXE
+        path: dist/Tokyo-Downloader.exe
+
+    - name: Release
+      uses: softprops/action-gh-release@v2
+      if: github.event_name == 'push'
+      with:
+        tag_name: v${{ github.run_number }}
+        name: "Release Build ${{ github.run_number }}"
+        files: dist/Tokyo-Downloader.exe
+        draft: false
+        prerelease: false
+        generate_release_notes: true
