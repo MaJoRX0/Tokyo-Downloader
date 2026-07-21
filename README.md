@@ -1,3 +1,10 @@
+# ⚠️ Project Currently Broken / Disabled
+
+**TokyoInsider has added Cloudflare protection, and this script is currently blocked by it.**
+
+That means the downloader will not work right now. Instead of receiving the anime page, the script gets a Cloudflare “Just a moment...” page and fails to extract download links.
+
+I’ll try to fix this if I can, but I can’t promise a fix will be possible or reliable.
 Since im rarely on github you can contact me on discord if anything needed. Username: x5oc
 
 # Tokyo Downloader
